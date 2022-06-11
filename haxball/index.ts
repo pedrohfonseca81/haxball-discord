@@ -1,5 +1,6 @@
 import { Socket } from "phoenix";
 import { registerHandlers } from "./handlers";
+import { parseConfig } from "./helpers/parseConfig";
 import { updateAdmins } from "./helpers/updateAdmins";
 import { FUTSAL_X3 } from "./src/maps";
 
@@ -8,8 +9,11 @@ const channel = socket.channel("room:lobby", { token: "123" });
 
 channel.join();
 
-async function main() {
-  const room = (window as any).HBInit({ roomName: "Futsal", noPlayer: true, public: true });
+socket.connect();
+
+async function main({ config }: any) {
+  const roomConfig = parseConfig(config);
+  const room = (window as any).HBInit(roomConfig);
 
   room.setCustomStadium(FUTSAL_X3);
 
@@ -30,8 +34,8 @@ async function main() {
   };
 
   registerHandlers(room, channel);
-
-  socket.connect();
 }
 
-main();
+channel.push("room:open", {});
+
+channel.on("room:open", main);

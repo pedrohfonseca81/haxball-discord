@@ -11,8 +11,18 @@ defmodule ServerWeb.RoomChannel do
     {:ok, "ok", socket}
   end
 
-  # Channels can be used in a request/response fashion
-  # by sending replies to requests from the client
+  @impl true
+  def handle_in("room:open", _data, socket) do
+    channel_id = 984_123_507_971_616_768
+    config = Application.fetch_env!(:server, :haxball) |> Keyword.get(:room)
+
+    ServerWeb.Endpoint.broadcast("messages", "room:open", %{
+      config: config
+    })
+
+    {:noreply, socket}
+  end
+
   @impl true
   def handle_in("room:on_player_join", %{"player" => player}, socket) do
     channel_id = 984_123_507_971_616_768
@@ -68,18 +78,5 @@ defmodule ServerWeb.RoomChannel do
     broadcast(socket, event, state)
 
     {:noreply, socket}
-  end
-
-  # It is also common to receive messages from the client and
-  # broadcast to everyone in the current topic (room:lobby).
-  @impl true
-  def handle_in("shout", payload, socket) do
-    broadcast(socket, "shout", payload)
-    {:noreply, socket}
-  end
-
-  # Add authorization logic here as required.
-  defp authorized?(_payload) do
-    true
   end
 end

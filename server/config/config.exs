@@ -7,8 +7,16 @@
 # General application configuration
 import Config
 
+config :server, :haxball,
+  room: %{
+    room_name: "test",
+    no_player: true,
+    public: false,
+    token: ""
+  }
+
 config :nostrum,
-  token: "TOKEN",
+  token: "",
   gateway_intents: :all
 
 # Configures the endpoint
